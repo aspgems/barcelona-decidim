@@ -21,6 +21,7 @@ module Decidim
         @meeting.with_lock do
           return broadcast(:invalid) unless can_join_meeting?
           create_registration
+          send_notification
         end
         broadcast(:ok)
       end
@@ -33,6 +34,26 @@ module Decidim
 
       def can_join_meeting?
         @meeting.registrations_enabled? && @meeting.has_available_slots?
+      end
+
+      def participatory_space_admins
+        @meeting.feature.participatory_space.admins
+      end
+
+      def send_notification
+        if occupied_slots_over?(0.5)
+          Decidim::EventsManager.publish(
+            event: "decidim.events.meetings.meeting_registrations_over_fifty",
+            event_class: Decidim::Meetings::MeetingRegistrationsOverFifty,
+            resource: @meeting,
+            recipient_ids: participatory_space_admins.pluck(:id),
+            user: @user
+          )
+        end
+      end
+
+      def occupied_slots_over?(percentage)
+        @meeting.remaining_slots == (@meeting.available_slots * (1 - percentage)).floor
       end
     end
   end
