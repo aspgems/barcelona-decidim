@@ -78,7 +78,7 @@
     "classnames": "^2.2.5",
     "graphql-anywhere": "^3.1.0",
     "graphql-tag": "^2.4.2",
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "moment": "^2.18.1",
     "react": "^15.6.1",
     "react-addons-update": "^15.6.2",
